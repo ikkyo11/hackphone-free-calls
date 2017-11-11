@@ -21,6 +21,9 @@ public class TriggerTest {
     SignallingContext signallingContext;
 
     @Mock
+    Order order;
+
+    @Mock
     InformationAboutCaller informationAboutCaller;
 
     @Before
@@ -38,7 +41,16 @@ public class TriggerTest {
     @Test
     public void pingingLeg_is_registered() {
         Trigger sut = new Trigger(()->pinger);
-        sut.waitForIncomingCalls(caller -> {});
+        sut.waitForIncomingCalls(order::callMe);
         verify(pinger, times(1)).register(any(RegisteringEvents.class));
     }
+
+
+    @Test
+    public void call_me_is_called_after_incoming_call() {
+        Trigger sut = new Trigger(()->pinger);
+        sut.waitForIncomingCalls(order::callMe);
+        verify(order, times(1)).callMe(any(PhoneNumber.class));
+    }
+
 }
