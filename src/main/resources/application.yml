@@ -1,0 +1,18 @@
+server:
+  port: 8080
+  host: 10.99.99.11
+
+asterisk:
+    host: asterisk.softwaremind.pl
+    port: 5060
+
+accounts:
+  pinging:
+    username: ${FREECALLS_ACCOUNTS_PINGING_USERNAME}
+    password: ${FREECALLS_ACCOUNTS_PINGING_PASSWORD}
+  firstLeg:
+    username: ${FREECALLS_ACCOUNTS_FIRSTLEG_USERNAME}
+    password: ${FREECALLS_ACCOUNTS_FIRSTLEG_PASSWORD}
+  secondLeg:
+    username: ${FREECALLS_ACCOUNTS_SECONDLEG_USERNAME}
+    password: ${FREECALLS_ACCOUNTS_SECONDLEG_PASSWORD}

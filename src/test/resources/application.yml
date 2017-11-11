@@ -1,0 +1,18 @@
+server:
+  port: 8080
+  host: localhost
+
+asterisk:
+    host: asterisk.softwaremind.pl
+    port: 5060
+
+accounts:
+  pinging:
+    username: pinging-test-user
+    password: pinging-test-user-password
+  firstLeg:
+    username: first-test-user
+    password: first-test-user-password
+  secondLeg:
+    username: second-test-user
+    password: second-test-user-password
