@@ -38,7 +38,7 @@ public class TriggerTest {
     @Test
     public void pingingLeg_is_registered() {
         Trigger sut = new Trigger(()->pinger);
-        sut.waitForIncomingCalls();
+        sut.waitForIncomingCalls(caller -> {});
         verify(pinger, times(1)).register(any(RegisteringEvents.class));
     }
 }

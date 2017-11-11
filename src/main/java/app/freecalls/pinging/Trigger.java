@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.function.Consumer;
+
 @Component
 class Trigger {
 
@@ -22,7 +24,7 @@ class Trigger {
         this.pingingDriver = pingingDriver;
     }
 
-    void waitForIncomingCalls() {
+    void waitForIncomingCalls(Consumer<InformationAboutCaller> incomingCall) {
         PhoneDriver driver = pingingDriver.pingingDriver();
         driver.register(new RegisteringEvents() {
 
@@ -43,7 +45,8 @@ class Trigger {
 
             @Override
             public void onIncomingCall(SignallingContext signallingContext, InformationAboutCaller informationAboutCaller) {
-                logger.info("EVENT|INCOMING_CALL|{}|{}|", signallingContext, informationAboutCaller);
+                logger.info("EVENT|INCOMING_CALL|{}|{}|", signallingContext.accountName(), informationAboutCaller);
+                incomingCall.accept(informationAboutCaller);
             }
         });
     }
