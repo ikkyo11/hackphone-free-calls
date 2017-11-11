@@ -25,5 +25,25 @@ public class Configured {
             throw new RuntimeException(ex);
         }
     }
+
+    PhoneDriver firstLegDriver() {
+        try {
+            final PhoneDriverFactory phoneFactory = new PhoneDriverFactory(asteriskConfiguration.getHost(), asteriskConfiguration.getPort());
+            final PhoneAccount account = new PhoneAccount(accountsConfiguration.getFirstLeg().getUsername(), accountsConfiguration.getFirstLeg().getPassword());
+            return phoneFactory.phone(account);
+        } catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    PhoneDriver secondLegDriver() {
+        try {
+            final PhoneDriverFactory phoneFactory = new PhoneDriverFactory(asteriskConfiguration.getHost(), asteriskConfiguration.getPort());
+            final PhoneAccount account = new PhoneAccount(accountsConfiguration.getSecondLeg().getUsername(), accountsConfiguration.getSecondLeg().getPassword());
+            return phoneFactory.phone(account);
+        } catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 }
 
