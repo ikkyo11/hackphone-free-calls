@@ -6,17 +6,22 @@ import hackphone.phone.configuration.PhoneAccount;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Configured {
+class Configured implements
+        PingingDriver,
+        FirstLegDriver,
+        SecondLegDriver
+{
 
     final AccountsConfiguration accountsConfiguration;
     final AsteriskConfiguration asteriskConfiguration;
 
-    public Configured(AccountsConfiguration accountsConfiguration, AsteriskConfiguration asteriskConfiguration) {
+    Configured(AccountsConfiguration accountsConfiguration, AsteriskConfiguration asteriskConfiguration) {
         this.accountsConfiguration = accountsConfiguration;
         this.asteriskConfiguration = asteriskConfiguration;
     }
 
-    PhoneDriver pingingDriver() {
+    @Override
+    public PhoneDriver pingingDriver() {
         try {
             final PhoneDriverFactory phoneFactory = new PhoneDriverFactory(asteriskConfiguration.getHost(), asteriskConfiguration.getPort());
             final PhoneAccount account = new PhoneAccount(accountsConfiguration.getPinging().getUsername(), accountsConfiguration.getPinging().getPassword());
@@ -26,7 +31,8 @@ public class Configured {
         }
     }
 
-    PhoneDriver firstLegDriver() {
+    @Override
+    public PhoneDriver firstLegDriver() {
         try {
             final PhoneDriverFactory phoneFactory = new PhoneDriverFactory(asteriskConfiguration.getHost(), asteriskConfiguration.getPort());
             final PhoneAccount account = new PhoneAccount(accountsConfiguration.getFirstLeg().getUsername(), accountsConfiguration.getFirstLeg().getPassword());
@@ -36,7 +42,8 @@ public class Configured {
         }
     }
 
-    PhoneDriver secondLegDriver() {
+    @Override
+    public PhoneDriver secondLegDriver() {
         try {
             final PhoneDriverFactory phoneFactory = new PhoneDriverFactory(asteriskConfiguration.getHost(), asteriskConfiguration.getPort());
             final PhoneAccount account = new PhoneAccount(accountsConfiguration.getSecondLeg().getUsername(), accountsConfiguration.getSecondLeg().getPassword());
@@ -46,4 +53,5 @@ public class Configured {
         }
     }
 }
+
 
