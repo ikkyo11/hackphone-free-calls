@@ -21,7 +21,7 @@ class AccountsConfiguration {
     @PostConstruct
     void print() {
         StringJoiner out = new StringJoiner(";");
-        out.add("Accounts configuration");
+        out.add("Configuration Accounts");
         out.add("Pinging");
         out.add(pinging.username);
         out.add("First leg");
