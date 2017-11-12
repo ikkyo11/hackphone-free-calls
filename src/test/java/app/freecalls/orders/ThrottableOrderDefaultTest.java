@@ -25,7 +25,7 @@ public class ThrottableOrderDefaultTest {
     @Test
     public void one_session_is_in_pending_state_because_executor_was_set() {
         sut.callMe(new PhoneNumber("111555444"));
-        sut.executeOne(driver -> {
+        sut.executeOne((driver,phone) -> {
 
         });
         assertEquals(true, sut.getPendingSession().isPresent());
@@ -34,7 +34,7 @@ public class ThrottableOrderDefaultTest {
     @Test
     public void there_is_no_pending_session_after_finished_session() {
         sut.callMe(new PhoneNumber("111555444"));
-        sut.executeOne(driver -> {
+        sut.executeOne((driver,phone) -> {
             driver.finish();
         });
         assertEquals(false, sut.getPendingSession().isPresent());

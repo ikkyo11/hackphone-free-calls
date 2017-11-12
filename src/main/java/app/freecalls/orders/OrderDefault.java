@@ -1,7 +1,5 @@
 package app.freecalls.orders;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -13,13 +11,10 @@ import java.util.stream.Stream;
 @Component
 public class OrderDefault implements Order {
 
-    private static final Logger logger = LoggerFactory.getLogger(OrderDefault.class);
-
     protected final LinkedList<PhoneNumber> orders = new LinkedList<>();
 
     @Override
     public void callMe(PhoneNumber phoneNumber) {
-        logger.info("I will call {} to get phone number of friend.", phoneNumber);
         orders.offer(phoneNumber);
     }
 
@@ -79,7 +74,7 @@ public class OrderDefault implements Order {
                     behaviour.rollback(phoneNumber);
                 }
             };
-            executors.forEach(e -> e.onStarted(driver));
+            executors.forEach(e -> e.onStarted(driver, phoneNumber));
             return driver;
         };
     }

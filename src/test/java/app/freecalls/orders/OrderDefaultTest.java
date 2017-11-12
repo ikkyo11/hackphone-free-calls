@@ -33,7 +33,7 @@ public class OrderDefaultTest {
     @Test
     public void no_sessions_are_in_orders_because_executor_was_set_and_one_session_was_pended() {
         sut.callMe(new PhoneNumber("111555444"));
-        sut.executeOne(driver -> {
+        sut.executeOne((driver,phone) -> {
 
         });
         assertEquals(0L, sut.countOrders());
