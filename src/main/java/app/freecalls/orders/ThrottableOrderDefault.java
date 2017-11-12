@@ -1,4 +1,4 @@
-package app.freecalls.pinging;
+package app.freecalls.orders;
 
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ class ThrottableOrderDefault extends OrderDefault implements ThrottableOrder {
     }
 
     @Override
-    public Optional<OrderExecutorDriver> executeOne(OrderExecutor... executor) {
+    public Optional<OrderExecutor.OrderExecutorDriver> executeOne(OrderExecutor... executor) {
         if(getPendingSession().isPresent()) {
             return Optional.empty();
         } else {

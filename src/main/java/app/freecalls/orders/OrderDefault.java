@@ -1,4 +1,4 @@
-package app.freecalls.pinging;
+package app.freecalls.orders;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public class OrderDefault implements Order {
         return Optional.ofNullable(orders.poll());
     }
 
-    Optional<OrderExecutorDriver> executeOne(OrderExecutor... executor) {
+    Optional<OrderExecutor.OrderExecutorDriver> executeOne(OrderExecutor... executor) {
         return nextOrder()
                 .stream()
                 .map(OrderDefault::createDriver)
@@ -65,10 +65,10 @@ public class OrderDefault implements Order {
         };
     }
 
-    private static Function<DriverBehaviour, Function<Stream<OrderExecutor>, OrderExecutorDriver>> createDriver(PhoneNumber phoneNumber) {
+    private static Function<DriverBehaviour, Function<Stream<OrderExecutor>, OrderExecutor.OrderExecutorDriver>> createDriver(PhoneNumber phoneNumber) {
         return behaviour -> executors -> {
             behaviour.pending(new Session(phoneNumber));
-            OrderExecutorDriver driver = new OrderExecutorDriver() {
+            OrderExecutor.OrderExecutorDriver driver = new OrderExecutor.OrderExecutorDriver() {
                 @Override
                 public void finish() {
                     behaviour.noPending();
@@ -86,15 +86,6 @@ public class OrderDefault implements Order {
 
     int countOrders() {
         return orders.size();
-    }
-
-    public interface OrderExecutorDriver {
-        void finish();
-        void rollback();
-    }
-
-    public interface OrderExecutor {
-        void onStarted(OrderExecutorDriver driver);
     }
 
     static class Session {

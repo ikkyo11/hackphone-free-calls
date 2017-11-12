@@ -1,4 +1,4 @@
-package app.freecalls.pinging;
+package app.freecalls.orders;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -45,14 +45,14 @@ public class ThrottableOrderDefaultTest {
         sut.callMe(new PhoneNumber("111555444"));
         sut.callMe(new PhoneNumber("222555444"));
         sut.callMe(new PhoneNumber("333555444"));
-        sut.executeOne().ifPresent(OrderDefault.OrderExecutorDriver::finish);
+        sut.executeOne().ifPresent(OrderExecutor.OrderExecutorDriver::finish);
         assertEquals(false, sut.getPendingSession().isPresent());
     }
 
     @Test
     public void no_error_during_executing_when_there_are_no_orders() {
-        Optional<OrderDefault.OrderExecutorDriver> driver = sut.executeOne();
-        driver.ifPresent(OrderDefault.OrderExecutorDriver::finish);
+        Optional<OrderExecutor.OrderExecutorDriver> driver = sut.executeOne();
+        driver.ifPresent(OrderExecutor.OrderExecutorDriver::finish);
         assertEquals(false, driver.isPresent());
         assertEquals(false, sut.getPendingSession().isPresent());
     }
@@ -62,8 +62,8 @@ public class ThrottableOrderDefaultTest {
         sut.callMe(new PhoneNumber("111555444"));
         sut.callMe(new PhoneNumber("222555444"));
         sut.callMe(new PhoneNumber("333555444"));
-        Optional<OrderDefault.OrderExecutorDriver> driverFirst = sut.executeOne();
-        Optional<OrderDefault.OrderExecutorDriver> driverSecond = sut.executeOne();
+        Optional<OrderExecutor.OrderExecutorDriver> driverFirst = sut.executeOne();
+        Optional<OrderExecutor.OrderExecutorDriver> driverSecond = sut.executeOne();
         assertEquals(true, driverFirst.isPresent());
         assertEquals(false, driverSecond.isPresent());
         assertEquals(2L, sut.countOrders());

@@ -17,12 +17,12 @@ public class AccountsConfigurationIntegrationTest {
 
     @Test
     public void account_pinging_with_username() {
-        assertEquals("pinging-test-user", accountsConfiguration.getPinging().getUsername());
+        assertEquals("orders-test-user", accountsConfiguration.getPinging().getUsername());
     }
 
     @Test
     public void account_pinging_with_password() {
-        assertEquals("pinging-test-user-password", accountsConfiguration.getPinging().getPassword());
+        assertEquals("orders-test-user-password", accountsConfiguration.getPinging().getPassword());
     }
 
     @Test

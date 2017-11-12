@@ -1,4 +1,4 @@
-package app.freecalls.pinging;
+package app.freecalls.orders;
 
 import org.springframework.stereotype.Component;
 

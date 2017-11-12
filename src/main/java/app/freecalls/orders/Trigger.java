@@ -1,4 +1,4 @@
-package app.freecalls.pinging;
+package app.freecalls.orders;
 
 import app.freecalls.config.PingingDriver;
 import hackphone.phone.PhoneDriver;
