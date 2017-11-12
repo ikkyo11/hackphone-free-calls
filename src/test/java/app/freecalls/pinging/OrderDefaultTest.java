@@ -96,4 +96,17 @@ public class OrderDefaultTest {
         assertEquals(false, sut.getPendingSession().isPresent());
         assertEquals(0L, sut.countOrders());
     }
+
+
+    @Test
+    public void next_executor_is_performed_after_finish_previous_session() {
+        sut.callMe(new PhoneNumber("111555444"));
+        sut.callMe(new PhoneNumber("222555444"));
+        sut.callMe(new PhoneNumber("333555444"));
+        Optional<OrderDefault.OrderExecutorDriver> driverFirst = sut.executeOne();
+        Optional<OrderDefault.OrderExecutorDriver> driverSecond = sut.executeOne();
+        assertEquals(true, driverFirst.isPresent());
+        assertEquals(false, driverSecond.isPresent());
+        assertEquals(2L, sut.countOrders());
+    }
 }
