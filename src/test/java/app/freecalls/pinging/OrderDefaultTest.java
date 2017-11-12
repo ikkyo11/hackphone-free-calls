@@ -3,6 +3,8 @@ package app.freecalls.pinging;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 
 public class OrderDefaultTest {
@@ -64,18 +66,14 @@ public class OrderDefaultTest {
     @Test
     public void no_sessions_are_in_orders_aftere_finishing_the_last_one() {
         sut.callMe(new PhoneNumber("111555444"));
-        sut.executeOne(driver -> {
-            driver.finish();
-        });
+        sut.executeOne().ifPresent(OrderDefault.OrderExecutorDriver::finish);
         assertEquals(0L, sut.countOrders());
     }
 
     @Test
     public void executions_with_errors_affects_rollbacking_to_orders() {
         sut.callMe(new PhoneNumber("111555444"));
-        sut.executeOne(driver -> {
-            driver.rollback();
-        });
+        sut.executeOne().ifPresent(OrderDefault.OrderExecutorDriver::rollback);
         assertEquals(1L, sut.countOrders());
     }
 
@@ -85,10 +83,17 @@ public class OrderDefaultTest {
         sut.callMe(new PhoneNumber("111555444"));
         sut.callMe(new PhoneNumber("222555444"));
         sut.callMe(new PhoneNumber("333555444"));
-        sut.executeOne(driver -> {
-            driver.finish();
-        });
+        sut.executeOne().ifPresent(OrderDefault.OrderExecutorDriver::finish);
         assertEquals(false, sut.getPendingSession().isPresent());
         assertEquals(2L, sut.countOrders());
+    }
+
+    @Test
+    public void no_error_during_executing_when_there_are_no_orders() {
+        Optional<OrderDefault.OrderExecutorDriver> driver = sut.executeOne();
+        driver.ifPresent(OrderDefault.OrderExecutorDriver::finish);
+        assertEquals(false, driver.isPresent());
+        assertEquals(false, sut.getPendingSession().isPresent());
+        assertEquals(0L, sut.countOrders());
     }
 }

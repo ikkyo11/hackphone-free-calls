@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -26,21 +27,26 @@ public class OrderDefault implements Order {
         return Optional.ofNullable(pending.get());
     }
 
-    void executeOne(OrderExecutor executor) {
+    Optional<OrderExecutorDriver> executeOne(OrderExecutor... executor) {
         PhoneNumber number = orders.poll();
-        pending.set(new Session(number));
-        OrderExecutorDriver driver = new OrderExecutorDriver() {
-            @Override
-            public void finish() {
-                pending.set(null);
-            }
+        if(number!=null) {
+            pending.set(new Session(number));
+            OrderExecutorDriver driver = new OrderExecutorDriver() {
+                @Override
+                public void finish() {
+                    pending.set(null);
+                }
 
-            @Override
-            public void rollback() {
-                orders.offer(number);
-            }
-        };
-        executor.onStarted(driver);
+                @Override
+                public void rollback() {
+                    orders.offer(number);
+                }
+            };
+            Arrays.asList(executor).forEach(e-> e.onStarted(driver));
+            return Optional.of(driver);
+        } else {
+            return Optional.empty();
+        }
     }
 
 
