@@ -44,6 +44,7 @@ class ThrottableOrderDefault extends OrderDefault implements ThrottableOrder {
             @Override
             public void rollback(PhoneNumber phoneNumber) {
                 orders.offer(phoneNumber);
+                pending.set(null);
             }
         };
     }

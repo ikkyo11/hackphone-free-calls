@@ -8,7 +8,7 @@ asterisk:
 
 executing:
   strategy:
-    initialDelay: 3000
+    initialDelay: 5000
     rate: 1000
 
 accounts:

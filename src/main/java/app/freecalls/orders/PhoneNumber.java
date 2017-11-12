@@ -1,5 +1,7 @@
 package app.freecalls.orders;
 
+import hackphone.phone.inviteing.CallingTo;
+
 public class PhoneNumber {
 
     final String phoneNumber;
@@ -11,5 +13,9 @@ public class PhoneNumber {
     @Override
     public String toString() {
         return phoneNumber.toString();
+    }
+
+    public CallingTo callingTo() {
+        return new CallingTo(phoneNumber);
     }
 }

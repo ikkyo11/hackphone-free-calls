@@ -1,6 +1,7 @@
 package app.freecalls.config;
 
 import hackphone.phone.PhoneDriver;
+import hackphone.phone.PhoneDriverFactory;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -40,6 +41,6 @@ public class ConfiguredTest {
         asteriskConfiguration.setHost("snmill.com");
         asteriskConfiguration.setPort(5060);
 
-        return new Configured(accountsConfiguration, asteriskConfiguration);
+        return new Configured(accountsConfiguration, new PhoneDriverFactoryConfiguration(asteriskConfiguration).phoneFactory());
     }
 }
