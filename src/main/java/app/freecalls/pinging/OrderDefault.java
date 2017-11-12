@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.sdp.Phone;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -14,7 +13,8 @@ public class OrderDefault implements Order {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderDefault.class);
 
-    final LinkedList<PhoneNumber> orders = new LinkedList<>();
+    private final LinkedList<PhoneNumber> orders = new LinkedList<>();
+    private final AtomicReference<Session> pending = new AtomicReference<>();
 
     @Override
     public void callMe(PhoneNumber phoneNumber) {
@@ -25,8 +25,6 @@ public class OrderDefault implements Order {
     Optional<Session> getPendingSession() {
         return Optional.ofNullable(pending.get());
     }
-
-    private final AtomicReference<Session> pending = new AtomicReference<>();
 
     void executeOne(OrderExecutor executor) {
         PhoneNumber number = orders.poll();
@@ -49,7 +47,6 @@ public class OrderDefault implements Order {
     int countOrders() {
         return orders.size();
     }
-
 
     public interface OrderExecutorDriver {
         void finish();
