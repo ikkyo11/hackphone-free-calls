@@ -25,24 +25,9 @@ public class OrderDefaultTest {
     }
 
     @Test
-    public void no_session_is_in_pending_state_because_no_executor_was_set() {
-        sut.callMe(new PhoneNumber("111555444"));
-        assertEquals(false, sut.getPendingSession().isPresent());
-    }
-
-    @Test
     public void no_executor_was_set_so_there_are_1_orders() {
         sut.callMe(new PhoneNumber("111555444"));
         assertEquals(1L, sut.countOrders());
-    }
-
-    @Test
-    public void one_session_is_in_pending_state_because_executor_was_set() {
-        sut.callMe(new PhoneNumber("111555444"));
-        sut.executeOne(driver -> {
-
-        });
-        assertEquals(true, sut.getPendingSession().isPresent());
     }
 
     @Test
@@ -52,15 +37,6 @@ public class OrderDefaultTest {
 
         });
         assertEquals(0L, sut.countOrders());
-    }
-
-    @Test
-    public void there_is_no_pending_session_after_finished_session() {
-        sut.callMe(new PhoneNumber("111555444"));
-        sut.executeOne(driver -> {
-            driver.finish();
-        });
-        assertEquals(false, sut.getPendingSession().isPresent());
     }
 
     @Test
@@ -84,7 +60,6 @@ public class OrderDefaultTest {
         sut.callMe(new PhoneNumber("222555444"));
         sut.callMe(new PhoneNumber("333555444"));
         sut.executeOne().ifPresent(OrderDefault.OrderExecutorDriver::finish);
-        assertEquals(false, sut.getPendingSession().isPresent());
         assertEquals(2L, sut.countOrders());
     }
 
@@ -93,20 +68,6 @@ public class OrderDefaultTest {
         Optional<OrderDefault.OrderExecutorDriver> driver = sut.executeOne();
         driver.ifPresent(OrderDefault.OrderExecutorDriver::finish);
         assertEquals(false, driver.isPresent());
-        assertEquals(false, sut.getPendingSession().isPresent());
         assertEquals(0L, sut.countOrders());
-    }
-
-
-    @Test
-    public void next_executor_is_performed_after_finish_previous_session() {
-        sut.callMe(new PhoneNumber("111555444"));
-        sut.callMe(new PhoneNumber("222555444"));
-        sut.callMe(new PhoneNumber("333555444"));
-        Optional<OrderDefault.OrderExecutorDriver> driverFirst = sut.executeOne();
-        Optional<OrderDefault.OrderExecutorDriver> driverSecond = sut.executeOne();
-        assertEquals(true, driverFirst.isPresent());
-        assertEquals(false, driverSecond.isPresent());
-        assertEquals(2L, sut.countOrders());
     }
 }

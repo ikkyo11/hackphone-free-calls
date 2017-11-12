@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -16,17 +15,12 @@ public class OrderDefault implements Order {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderDefault.class);
 
-    private final LinkedList<PhoneNumber> orders = new LinkedList<>();
-    private final AtomicReference<Session> pending = new AtomicReference<>();
+    protected final LinkedList<PhoneNumber> orders = new LinkedList<>();
 
     @Override
     public void callMe(PhoneNumber phoneNumber) {
         logger.info("I will call {} to get phone number of friend.", phoneNumber);
         orders.offer(phoneNumber);
-    }
-
-    Optional<Session> getPendingSession() {
-        return Optional.ofNullable(pending.get());
     }
 
     private Optional<PhoneNumber> nextOrder() {
@@ -37,7 +31,7 @@ public class OrderDefault implements Order {
         return nextOrder()
                 .stream()
                 .map(OrderDefault::createDriver)
-                .map(fn->fn.apply(behaviourBasedOn(pending, orders)))
+                .map(fn->fn.apply(behaviourBasedOnState()))
                 .map(fn->fn.apply(Arrays.asList(executor).stream()))
                 .findFirst();
     }
@@ -48,16 +42,20 @@ public class OrderDefault implements Order {
         void rollback(PhoneNumber phoneNumber);
     }
 
-    private static DriverBehaviour behaviourBasedOn(AtomicReference pending, LinkedList<PhoneNumber> orders) {
+    protected DriverBehaviour behaviourBasedOnState() {
+        return behaviourBasedOn(orders);
+    }
+
+    private static DriverBehaviour behaviourBasedOn(LinkedList<PhoneNumber> orders) {
         return new DriverBehaviour() {
             @Override
             public void pending(Session session) {
-                pending.set(session);
+
             }
 
             @Override
             public void noPending() {
-                pending.set(null);
+
             }
 
             @Override

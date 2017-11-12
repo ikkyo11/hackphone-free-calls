@@ -8,9 +8,9 @@ import javax.annotation.PostConstruct;
 class Runs {
 
     final Trigger trigger;
-    final Order order;
+    final ThrottableOrder order;
 
-    public Runs(Trigger trigger, Order order) {
+    public Runs(Trigger trigger, ThrottableOrder order) {
         this.trigger = trigger;
         this.order = order;
     }
