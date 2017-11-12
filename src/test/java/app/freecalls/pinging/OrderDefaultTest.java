@@ -78,4 +78,17 @@ public class OrderDefaultTest {
         });
         assertEquals(1L, sut.countOrders());
     }
+
+
+    @Test
+    public void only_one_order_is_executed_on_demand() {
+        sut.callMe(new PhoneNumber("111555444"));
+        sut.callMe(new PhoneNumber("222555444"));
+        sut.callMe(new PhoneNumber("333555444"));
+        sut.executeOne(driver -> {
+            driver.finish();
+        });
+        assertEquals(false, sut.getPendingSession().isPresent());
+        assertEquals(2L, sut.countOrders());
+    }
 }
