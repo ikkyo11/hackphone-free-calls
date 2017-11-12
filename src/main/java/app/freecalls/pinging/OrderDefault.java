@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 @Component
 public class OrderDefault implements Order {
@@ -27,28 +29,62 @@ public class OrderDefault implements Order {
         return Optional.ofNullable(pending.get());
     }
 
+    private Optional<PhoneNumber> nextOrder() {
+        return Optional.ofNullable(orders.poll());
+    }
+
     Optional<OrderExecutorDriver> executeOne(OrderExecutor... executor) {
-        PhoneNumber number = orders.poll();
-        if(number!=null) {
-            pending.set(new Session(number));
+        return nextOrder()
+                .stream()
+                .map(OrderDefault::createDriver)
+                .map(fn->fn.apply(behaviourBasedOn(pending, orders)))
+                .map(fn->fn.apply(Arrays.asList(executor).stream()))
+                .findFirst();
+    }
+
+    interface DriverBehaviour {
+        void pending(Session session);
+        void noPending();
+        void rollback(PhoneNumber phoneNumber);
+    }
+
+    private static DriverBehaviour behaviourBasedOn(AtomicReference pending, LinkedList<PhoneNumber> orders) {
+        return new DriverBehaviour() {
+            @Override
+            public void pending(Session session) {
+                pending.set(session);
+            }
+
+            @Override
+            public void noPending() {
+                pending.set(null);
+            }
+
+            @Override
+            public void rollback(PhoneNumber phoneNumber) {
+                orders.offer(phoneNumber);
+            }
+        };
+    }
+
+    private static Function<DriverBehaviour, Function<Stream<OrderExecutor>, OrderExecutorDriver>> createDriver(PhoneNumber phoneNumber) {
+        return behaviour -> executors -> {
+            behaviour.pending(new Session(phoneNumber));
             OrderExecutorDriver driver = new OrderExecutorDriver() {
                 @Override
                 public void finish() {
-                    pending.set(null);
+                    behaviour.noPending();
                 }
 
                 @Override
                 public void rollback() {
-                    orders.offer(number);
+                    behaviour.rollback(phoneNumber);
                 }
             };
-            Arrays.asList(executor).forEach(e-> e.onStarted(driver));
-            return Optional.of(driver);
-        } else {
-            return Optional.empty();
-        }
+            executors.forEach(e -> e.onStarted(driver));
+            return driver;
+        };
     }
-
 
     int countOrders() {
         return orders.size();
