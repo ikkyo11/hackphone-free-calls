@@ -10,6 +10,7 @@ executing:
   strategy:
     initialDelay: 5000
     rate: 1000
+    postponing: 7000
 
 accounts:
   pinging:

@@ -1,9 +1,11 @@
 package app.freecalls.executor;
 
+import app.freecalls.orders.OrderExecutor;
 import app.freecalls.orders.ThrottableOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,9 +16,11 @@ class ExecutingStrategy {
     private static final Logger logger = LoggerFactory.getLogger(ExecutingStrategy.class);
 
     final ThrottableOrder orders;
-    final ObjectFactory<OrderExecutorScenario> executorFactory;
+    final ObjectFactory<OrderExecutor> executorFactory;
 
-    public ExecutingStrategy(ThrottableOrder orders, ObjectFactory<OrderExecutorScenario> executorFactory) {
+    public ExecutingStrategy(
+            ThrottableOrder orders,
+            @Qualifier("postponed") ObjectFactory<OrderExecutor> executorFactory) {
         this.orders = orders;
         this.executorFactory = executorFactory;
     }
