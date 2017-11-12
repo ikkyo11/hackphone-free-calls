@@ -8,8 +8,8 @@ asterisk:
 
 accounts:
   pinging:
-    username: orders-test-user
-    password: orders-test-user-password
+    username: pinging-test-user
+    password: pinging-test-user-password
   firstLeg:
     username: first-test-user
     password: first-test-user-password
