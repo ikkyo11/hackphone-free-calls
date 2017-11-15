@@ -1,6 +1,7 @@
 package app.freecalls.executor;
 
 import app.freecalls.config.FirstLegDriver;
+import app.freecalls.config.SecondLegDriver;
 import app.freecalls.orders.PhoneNumber;
 import hackphone.phone.PhoneDriverFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,8 +22,10 @@ class PostponedOrderExecutorScenario extends OrderExecutorScenario {
 
     public PostponedOrderExecutorScenario(
             @Value("${executing.strategy.postponing:6000}") long postponingMillis,
-            FirstLegDriver firstLegDriver, PhoneDriverFactory phoneDriverFactory) {
-        super(firstLegDriver, phoneDriverFactory);
+            FirstLegDriver firstLegDriver,
+            SecondLegDriver secondLegDriver,
+            PhoneDriverFactory phoneDriverFactory) {
+        super(firstLegDriver, secondLegDriver, phoneDriverFactory);
         this.postponingMillis = postponingMillis;
     }
 

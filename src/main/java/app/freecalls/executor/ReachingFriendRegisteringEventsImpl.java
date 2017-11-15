@@ -14,55 +14,47 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
-import java.util.function.Consumer;
 
-class GettingFriendNumberRegisteringEventsImpl implements RegisteringEvents {
+class ReachingFriendRegisteringEventsImpl implements RegisteringEvents {
 
-    private static final Logger logger = LoggerFactory.getLogger(GettingFriendNumberRegisteringEventsImpl.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(ReachingFriendRegisteringEventsImpl.class);
     private final CallingTo callingTo;
-    private final OrderExecutor.OrderExecutorDriver driver;
-    private final ConfiguredStrategies phoneDriverStrategies;
     private final Streaming streaming;
-    private final Consumer<CallingTo> onFriendIsKnown;
+    private final ConfiguredStrategies phoneDriverStrategies;
+    private final OrderExecutor.OrderExecutorDriver driver;
 
-    public GettingFriendNumberRegisteringEventsImpl(
+    public ReachingFriendRegisteringEventsImpl(
             CallingTo callingTo,
             Streaming streaming,
-            OrderExecutor.OrderExecutorDriver driver,
             ConfiguredStrategies phoneDriverStrategies,
-            Consumer<CallingTo> onFriendIsKnown) {
+            OrderExecutor.OrderExecutorDriver driver) {
         this.callingTo = callingTo;
         this.streaming = streaming;
-        this.driver = driver;
         this.phoneDriverStrategies = phoneDriverStrategies;
-        this.onFriendIsKnown = onFriendIsKnown;
+        this.driver = driver;
     }
 
     @Override
     public State createCustomizedStateForRegisteredState(SignallingContext signallingContext, SignallingSender signallingSender) {
         signallingContext.getInviteingContext().setCallingTo(callingTo);
-
-
-
         GettingFriendNumberEvents gettingFriendNumberEvents = new GettingFriendNumberEvents() {
             @Override
             public void onDtmf(String number) {
-                logger.info("Friend-s phone number|{}|", number);
-                onFriendIsKnown.accept(new CallingTo(number));
+                logger.info("DTMF signal is ignored by Frind-s reacher");
+                // logger.info("Friend-s phone number|{}|", number);
+                // callYourFriend(new CallingTo(number));
             }
 
             @Override
             public void onAudio(ByteBuffer alaw_8000Hz_20ms) {
-                streaming.fromFirst(alaw_8000Hz_20ms);
+                streaming.fromSecond(alaw_8000Hz_20ms);
             }
 
             @Override
             public void onSenderAvailable(MediaSender sender_alaw_8000Hz_20ms) {
-                streaming.firstSender(sender_alaw_8000Hz_20ms);
+                streaming.secondSender(sender_alaw_8000Hz_20ms);
             }
         };
-
 
         return new InviteingStateMachine(
                 signallingContext,
@@ -84,6 +76,7 @@ class GettingFriendNumberRegisteringEventsImpl implements RegisteringEvents {
     public void onRegisteringFailed(SignallingContext signallingContext, String reason) {
         logger.error("|Account {}|Registration filed due to reason {}.", signallingContext.accountName(), reason);
         driver.rollback();
+        // TODO: moze zaimast rollbacka powiadomic strone A ze polaczenie sie (dokladnie to rejestacja) nie udalo
     }
 
     @Override
