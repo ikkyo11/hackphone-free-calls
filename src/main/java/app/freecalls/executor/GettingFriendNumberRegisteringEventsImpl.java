@@ -1,6 +1,7 @@
 package app.freecalls.executor;
 
 import app.freecalls.orders.OrderExecutor;
+import hackphone.media.io.MediaSender;
 import hackphone.phone.ConfiguredStrategies;
 import hackphone.phone.configuration.SignallingContext;
 import hackphone.phone.inviteing.CallingTo;
@@ -12,15 +13,18 @@ import hackphone.phone.registering.stateMachine.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class RegisteringEventsImpl implements RegisteringEvents {
+import java.nio.ByteBuffer;
 
-    private static final Logger logger = LoggerFactory.getLogger(RegisteringEventsImpl.class);
+class GettingFriendNumberRegisteringEventsImpl implements RegisteringEvents {
+
+    private static final Logger logger = LoggerFactory.getLogger(GettingFriendNumberRegisteringEventsImpl.class);
 
     private final CallingTo callingTo;
     private final OrderExecutor.OrderExecutorDriver driver;
     private final ConfiguredStrategies phoneDriverStrategies;
+    private final Streaming streaming = new Streaming();
 
-    public RegisteringEventsImpl(
+    public GettingFriendNumberRegisteringEventsImpl(
             CallingTo callingTo,
             OrderExecutor.OrderExecutorDriver driver,
             ConfiguredStrategies phoneDriverStrategies) {
@@ -32,11 +36,37 @@ class RegisteringEventsImpl implements RegisteringEvents {
     @Override
     public State createCustomizedStateForRegisteredState(SignallingContext signallingContext, SignallingSender signallingSender) {
         signallingContext.getInviteingContext().setCallingTo(callingTo);
+
+
+
+        GettingFriendNumberEvents gettingFriendNumberEvents = new GettingFriendNumberEvents() {
+            @Override
+            public void onDtmf(String number) {
+                logger.info("Friend-s phone number|{}|", number);
+                // callYourFriend(new CallingTo(number));
+            }
+
+            @Override
+            public void onAudio(ByteBuffer alaw_8000Hz_20ms) {
+                streaming.fromFirst(alaw_8000Hz_20ms);
+            }
+
+            @Override
+            public void onSenderAvailable(MediaSender sender_alaw_8000Hz_20ms) {
+                streaming.firstSender(sender_alaw_8000Hz_20ms);
+            }
+        };
+
+
         return new InviteingStateMachine(
                 signallingContext,
                 signallingSender,
                 phoneDriverStrategies,
-                new GettingFriendNumber(failureReason -> driver.rollback(), bye -> driver.finish()));
+                new GettingFriendNumber(
+                        failureReason -> driver.rollback(),
+                        bye -> driver.finish(),
+                        phoneDriverStrategies.mediaStrategy(),
+                        gettingFriendNumberEvents));
     }
 
     @Override

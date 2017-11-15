@@ -31,6 +31,6 @@ class OrderExecutorScenario implements OrderExecutor {
     public void onStarted(OrderExecutorDriver driver, PhoneNumber caller) {
         PhoneDriver phone = firstLegDriver.firstLegDriver();
         logger.info("Calling to {} for friend-s contact. Using signalization {}.", caller.toString(), phone.toString());
-        phone.register(new RegisteringEventsImpl(caller.callingTo(), driver, phoneDriverFactory.getStrategies()));
+        phone.register(new GettingFriendNumberRegisteringEventsImpl(caller.callingTo(), driver, phoneDriverFactory.getStrategies()));
     }
 }
